@@ -1,0 +1,54 @@
+﻿@model ContractMaster.Web.Models.Client
+@{
+    ViewData["Title"] = "Edit Client";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4><i class="fas fa-edit"></i> Edit Client</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="ClientId" />
+                        
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Client Name</label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="ContactDetails" class="form-label">Contact Email</label>
+                            <input asp-for="ContactDetails" class="form-control" type="email" />
+                            <span asp-validation-for="ContactDetails" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Region" class="form-label">Region</label>
+                            <input asp-for="Region" class="form-control" />
+                            <span asp-validation-for="Region" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a href="/Clients" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,94 @@
+﻿@using ContractMaster.Web.Models
+@model ContractMaster.Web.Models.ServiceRequest
+@{
+    ViewData["Title"] = "Create Service Request";
+    var contract = ViewBag.Contract as Contract;
+    var currentRate = ViewBag.CurrentRate ?? 19.50m;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="fas fa-headset"></i> Create Service Request</h4>
+                </div>
+                <div class="card-body">
+                    @if (contract != null)
+                    {
+                        <div class="alert alert-info">
+                            <strong>Contract:</strong> @(contract.Client?.Name ?? "N/A")<br />
+                            <strong>Contract Status:</strong>
+                            <span class="badge bg-success">@contract.Status</span><br />
+                            <strong>Current USD/ZAR Rate:</strong>
+                            <span id="currentRate" class="fw-bold">@currentRate.ToString("F4")</span>
+                        </div>
+                    }
+                    
+                    <form asp-action="Create" method="post">
+                        <input type="hidden" asp-for="ContractId" />
+                        <input type="hidden" name="currentRate" value="@currentRate" />
+                        
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-bold">Service Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Describe the service needed..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="CostUSD" class="form-label fw-bold">Cost (USD)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="CostUSD" class="form-control" id="usdAmount" step="0.01" />
+                                    </div>
+                                    <span asp-validation-for="CostUSD" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Cost (ZAR) - Auto Calculated</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">R</span>
+                                        <input type="text" class="form-control" id="zarAmount" readonly style="background-color: #e9ecef;" />
+                                    </div>
+                                    <small class="text-muted">Auto-converted using current exchange rate</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check-circle"></i> Create Service Request
+                            </button>
+                            <a href="/Contracts" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+        $('#usdAmount').on('input', function() {
+        var usd = $(this).val();
+        var rateText = $('#currentRate').text();
+        var rate = parseFloat(rateText);
+                
+        if (usd && !isNaN(usd) && usd > 0 && !isNaN(rate)) {
+        var zar = (parseFloat(usd) * rate).toFixed(2);
+        $('#zarAmount').val(zar);
+        } else {
+        $('#zarAmount').val('');
+        }
+        });
+        });
+    </script>
+}

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ContractMaster.Tests/ContractMaster.Tests.csproj" Id="e880d642-4874-4439-9afb-df2c0f39d6ce" />
+  <Project Path="ContractMaster.Web/ContractMaster.Web.csproj" />
+</Solution>

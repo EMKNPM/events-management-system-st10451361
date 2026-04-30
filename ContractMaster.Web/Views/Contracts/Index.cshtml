@@ -1,0 +1,157 @@
+﻿@using ContractMaster.Web.Models
+@model IEnumerable<ContractMaster.Web.Models.Contract>
+@{
+    ViewData["Title"] = "Contracts";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-file-contract"></i> Contracts</h1>
+        <a href="/Contracts/Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New Contract
+        </a>
+    </div>
+
+    <!-- Search/Filter Panel -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            <i class="fas fa-filter"></i> Filter Contracts
+        </div>
+        <div class="card-body">
+            <form method="get" action="/Contracts">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">Start Date From:</label>
+                        <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">End Date To:</label>
+                        <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Status:</label>
+                        <select name="status" class="form-control">
+                            <option value="">-- All --</option>
+                            <option value="0" selected="@(ViewBag.SelectedStatus != null && (int)ViewBag.SelectedStatus == 0 ? true : false)">Draft</option>
+                            <option value="1" selected="@(ViewBag.SelectedStatus != null && (int)ViewBag.SelectedStatus == 1 ? true : false)">Active</option>
+                            <option value="2" selected="@(ViewBag.SelectedStatus != null && (int)ViewBag.SelectedStatus == 2 ? true : false)">Expired</option>
+                            <option value="3" selected="@(ViewBag.SelectedStatus != null && (int)ViewBag.SelectedStatus == 3 ? true : false)">On Hold</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary form-control">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No contracts found. Click "Create New Contract" to add one.
+            @if (ViewBag.StartDate != null || ViewBag.EndDate != null || ViewBag.SelectedStatus != null)
+            {
+                <br />
+                <a href="/Contracts" class="btn btn-sm btn-secondary mt-2">Clear Filters</a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Client</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Service Level</th>
+                        <th>Agreement</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var contract in Model)
+                    {
+                        <tr>
+                            <td>@contract.ContractId</td>
+                            <td>@(contract.Client?.Name ?? "N/A")</td>
+                            <td>@contract.StartDate.ToShortDateString()</td>
+                            <td>@contract.EndDate.ToShortDateString()</td>
+                            <td>
+                                @if (contract.Status == ContractStatus.Active)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else if (contract.Status == ContractStatus.Draft)
+                                {
+                                    <span class="badge bg-secondary">Draft</span>
+                                }
+                                else if (contract.Status == ContractStatus.Expired)
+                                {
+                                    <span class="badge bg-danger">Expired</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">On Hold</span>
+                                }
+                            </td>
+                            <td>@contract.ServiceLevel</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(contract.SignedAgreementPath))
+                                {
+                                    <a href="/Contracts/DownloadAgreement/@contract.ContractId" class="btn btn-sm btn-info">
+                                        <i class="fas fa-download"></i> PDF
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No file</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="/Contracts/Details/@contract.ContractId" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> Details
+                                </a>
+                                @if (contract.Status == ContractStatus.Active || contract.Status == ContractStatus.Draft)
+                                {
+                                    <a href="/ServiceRequests/Create/@contract.ContractId" class="btn btn-sm btn-success">
+                                        <i class="fas fa-plus"></i> Request
+                                    </a>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-secondary" disabled title="Cannot create request for @contract.Status contract">
+                                        <i class="fas fa-ban"></i> Blocked
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Show filter summary if filters are applied -->
+        @if (ViewBag.StartDate != null || ViewBag.EndDate != null || ViewBag.SelectedStatus != null)
+        {
+            <div class="alert alert-info mt-3">
+                <i class="fas fa-filter"></i> Showing filtered results.
+                <a href="/Contracts" class="alert-link">Clear all filters</a>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Optional: Add any JavaScript for the filter if needed
+        console.log("Contracts page loaded");
+    </script>
+}

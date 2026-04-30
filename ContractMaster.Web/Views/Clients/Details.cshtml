@@ -1,0 +1,38 @@
+﻿@model ContractMaster.Web.Models.Client
+@{
+    ViewData["Title"] = "Client Details";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-user"></i> Client Details</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">ID</dt>
+                        <dd class="col-sm-9">@Model.ClientId</dd>
+                        
+                        <dt class="col-sm-3">Name</dt>
+                        <dd class="col-sm-9">@Model.Name</dd>
+                        
+                        <dt class="col-sm-3">Email</dt>
+                        <dd class="col-sm-9">@Model.ContactDetails</dd>
+                        
+                        <dt class="col-sm-3">Region</dt>
+                        <dd class="col-sm-9">@Model.Region</dd>
+                    </dl>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="/Clients/Edit/@Model.ClientId" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="/Clients" class="btn btn-secondary">Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
