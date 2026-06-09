@@ -1,9 +1,7 @@
-﻿using ContractMaster.Web.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Reflection.Emit;
+﻿using Microsoft.EntityFrameworkCore;
+using ContractMaster.API.Models;  
 
-namespace ContractMaster.Web.Data
+namespace ContractMaster.API.Data
 {
     public class AppDbContext : DbContext
     {
@@ -20,22 +18,14 @@ namespace ContractMaster.Web.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Client Configuration
             modelBuilder.Entity<Client>(entity =>
             {
                 entity.HasKey(e => e.ClientId);
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.ContactDetails).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Region).IsRequired().HasMaxLength(50);
-
-                // Seed data
-                entity.HasData(
-                    new Client { ClientId = 1, Name = "ABC Corporation", ContactDetails = "admin@abccorp.com", Region = "Gauteng" },
-                    new Client { ClientId = 2, Name = "XYZ Enterprises", ContactDetails = "info@xyz.co.za", Region = "Western Cape" }
-                );
             });
 
-            // Contract Configuration
             modelBuilder.Entity<Contract>(entity =>
             {
                 entity.HasKey(e => e.ContractId);
@@ -46,22 +36,8 @@ namespace ContractMaster.Web.Data
                     .WithMany(cl => cl.Contracts)
                     .HasForeignKey(c => c.ClientId)
                     .OnDelete(DeleteBehavior.Restrict);
-
-                // Seed data
-                entity.HasData(
-                    new Contract
-                    {
-                        ContractId = 1,
-                        ClientId = 1,
-                        StartDate = new DateTime(2025, 1, 1),
-                        EndDate = new DateTime(2025, 12, 31),
-                        Status = ContractStatus.Active,
-                        ServiceLevel = "Premium"
-                    }
-                );
             });
 
-            // ServiceRequest Configuration
             modelBuilder.Entity<ServiceRequest>(entity =>
             {
                 entity.HasKey(e => e.ServiceRequestId);

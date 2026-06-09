@@ -1,4 +1,4 @@
-﻿namespace ContractMaster.Web.Services
+﻿namespace ContractMaster.API.Services
 {
     public interface ICurrencyExchangeService
     {

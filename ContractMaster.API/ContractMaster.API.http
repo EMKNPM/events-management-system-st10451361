@@ -1,0 +1,6 @@
+@ContractMaster.API_HostAddress = http://localhost:5207
+
+GET {{ContractMaster.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

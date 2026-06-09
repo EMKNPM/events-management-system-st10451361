@@ -1,0 +1,46 @@
+services:
+  sql-server-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: contractmaster-db
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourStrong!Password"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    networks:
+      - contractmaster-network
+
+  contractmaster-api:
+    build:
+      context: ./ContractMaster.API
+      dockerfile: Dockerfile
+    container_name: contractmaster-api
+    ports:
+      - "5001:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__DefaultConnection: "Server=sql-server-db;Database=ContractMasterDB;User Id=sa;Password=YourStrong!Password;TrustServerCertificate=true;"
+    depends_on:
+      - sql-server-db
+    networks:
+      - contractmaster-network
+
+  contractmaster-web:
+    build:
+      context: ./ContractMaster.Web
+      dockerfile: Dockerfile
+    container_name: contractmaster-web
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ApiBaseUrl: "http://contractmaster-api:8080"
+    depends_on:
+      - contractmaster-api
+    networks:
+      - contractmaster-network
+
+networks:
+  contractmaster-network:
+    driver: bridge

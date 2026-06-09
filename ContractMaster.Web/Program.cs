@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using ContractMaster.Web.Data;
 using ContractMaster.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,15 +5,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddControllersWithViews();
 
-// Add Database Context
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Add HttpClient for API calls (NO direct database access)
+builder.Services.AddHttpClient<IApiService, ApiService>(client =>
+{
+    var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://contractmaster-api";
+    client.BaseAddress = new Uri(apiBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
-// Add HTTP Client for API calls
-builder.Services.AddHttpClient<ICurrencyExchangeService, CurrencyExchangeService>();
-
-// Register services
-builder.Services.AddScoped<ICurrencyExchangeService, CurrencyExchangeService>();
+builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -34,12 +33,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-// Create database on startup
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await dbContext.Database.EnsureCreatedAsync();
-}
 
 app.Run();

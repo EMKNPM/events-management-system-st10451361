@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+  </Folder>
+  <Project Path="ContractMaster.API/ContractMaster.API.csproj" Id="97896440-7f1b-43b7-9749-e1abc9fa34e9" />
   <Project Path="ContractMaster.Tests/ContractMaster.Tests.csproj" Id="e880d642-4874-4439-9afb-df2c0f39d6ce" />
   <Project Path="ContractMaster.Web/ContractMaster.Web.csproj" />
 </Solution>

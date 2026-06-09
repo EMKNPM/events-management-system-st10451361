@@ -1,25 +1,26 @@
-using ContractMaster.Web.Data;
 using ContractMaster.Web.Models;
+using ContractMaster.Web.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ContractMaster.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IApiService _apiService;
 
-        public HomeController(AppDbContext context)
+        public HomeController(IApiService apiService)
         {
-            _context = context;
+            _apiService = apiService;
         }
 
         public async Task<IActionResult> Index()
         {
-            ViewBag.TotalClients = await _context.Clients.CountAsync();
-            ViewBag.TotalContracts = await _context.Contracts.CountAsync();
-            ViewBag.ActiveContracts = await _context.Contracts.CountAsync(c => c.Status == ContractStatus.Active);
-            ViewBag.TotalRequests = await _context.ServiceRequests.CountAsync();
+            var clients = await _apiService.GetClientsAsync();
+            var contracts = await _apiService.GetContractsAsync(null, null, null);
+
+            ViewBag.TotalClients = clients.Count;
+            ViewBag.TotalContracts = contracts.Count;
+            ViewBag.ActiveContracts = contracts.Count(c => c.Status == ContractStatus.Active);
 
             return View();
         }

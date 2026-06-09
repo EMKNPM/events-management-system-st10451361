@@ -1,6 +1,6 @@
-﻿using ContractMaster.Web.Models;
+﻿using Xunit;
+using ContractMaster.Web.Models;
 
-namespace ContractMaster.Tests;
 
 public class CurrencyCalculationTests
 {

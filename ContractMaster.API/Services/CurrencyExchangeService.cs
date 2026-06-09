@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace ContractMaster.Web.Services
+namespace ContractMaster.API.Services
 {
     public class CurrencyExchangeService : ICurrencyExchangeService
     {
@@ -25,29 +25,22 @@ namespace ContractMaster.Web.Services
                 var apiKey = _configuration["ExchangeRateApi:Key"];
                 if (string.IsNullOrEmpty(apiKey) || apiKey == "YOUR_FREE_API_KEY_HERE")
                 {
-                    _logger.LogWarning("No valid API key found. Using mock rate.");
                     return 19.50m;
                 }
 
                 var url = $"https://v6.exchangerate-api.com/v6/{apiKey}/pair/USD/ZAR";
-
-                _logger.LogInformation("Calling Exchange Rate API...");
-
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
                 using var document = JsonDocument.Parse(json);
-
                 var rate = document.RootElement.GetProperty("conversion_rate").GetDecimal();
-
-                _logger.LogInformation("Current USD/ZAR rate: {Rate}", rate);
 
                 return rate;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to get exchange rate. Using fallback rate.");
+                _logger.LogError(ex, "Failed to get exchange rate");
                 return 19.50m;
             }
         }
